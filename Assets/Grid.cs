@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -12,6 +13,9 @@ public class Grid : MonoBehaviour
     [SerializeField] private Vector2 _gridWorldSize;
     [SerializeField] private float _nodeRadius;
     [SerializeField] private Node[,] _grid;
+    [SerializeField] private TerrainType[] _walkableRegions;
+    private LayerMask _walkableMask;
+    private Dictionary<int, int> _walkableRegionsDictionary = new Dictionary<int, int>();
 
     private float _nodeDiameter;
     private int _gridSizeX, _gridSizeY;
@@ -23,6 +27,13 @@ public class Grid : MonoBehaviour
         _nodeDiameter = _nodeRadius * 2;
         _gridSizeX = Mathf.RoundToInt(_gridWorldSize.x / _nodeDiameter);
         _gridSizeY = Mathf.RoundToInt(_gridWorldSize.y / _nodeDiameter);
+
+        foreach (TerrainType region in _walkableRegions)
+        {
+            _walkableMask.value |= region.TerrainMask.value;
+            _walkableRegionsDictionary.Add((int)MathF.Log(region.TerrainMask.value, 2), region.TerrainPenalty);
+        }
+        
         CreateGrid();
     }
     
@@ -39,7 +50,21 @@ public class Grid : MonoBehaviour
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * _nodeDiameter + _nodeRadius) +
                                      Vector3.forward * (y * _nodeDiameter + _nodeRadius);
                 bool walkable = !Physics.CheckSphere(worldPoint, _nodeRadius, _unwalkableMask);
-                _grid[x, y] = new Node(walkable, worldPoint, x, y);
+
+                int movementPenalty = 0;
+
+                if (walkable)
+                {
+                    Ray ray = new Ray(worldPoint + Vector3.up * 50, Vector3.down);
+                    RaycastHit hit;
+                    if (Physics.Raycast(ray, out hit, 100, _walkableMask))
+                    {
+                        _walkableRegionsDictionary.TryGetValue(hit.collider.gameObject.layer, out movementPenalty);
+                    }
+                    Debug.Log(movementPenalty);
+                }
+
+                _grid[x, y] = new Node(walkable, worldPoint, x, y, movementPenalty);
             }
         }
     }
@@ -89,5 +114,12 @@ public class Grid : MonoBehaviour
                 Gizmos.DrawCube(n.WorldPosition, Vector3.one * (_nodeDiameter - .1f));
             }
         }
+    }
+
+    [Serializable]
+    public class TerrainType
+    {
+        public LayerMask TerrainMask;
+        public int TerrainPenalty;
     }
 }

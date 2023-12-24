@@ -60,7 +60,7 @@ public class Pathfinding : MonoBehaviour
                 foreach (Node neighbour in _grid.GetNeighbours(currentNode))
                 {
                     if (!neighbour.Walkable || _closedSet.Contains(neighbour)) continue;
-                    int newMovementCostToNeighbour = currentNode.GCost + GetDistance(currentNode, neighbour);
+                    int newMovementCostToNeighbour = currentNode.GCost + GetDistance(currentNode, neighbour) + neighbour.MovementPenalty;
                     if (newMovementCostToNeighbour < neighbour.GCost || !_openSet.Contains(neighbour))
                     {
                         neighbour.GCost = newMovementCostToNeighbour;
