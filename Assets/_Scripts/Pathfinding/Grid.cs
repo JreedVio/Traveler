@@ -61,7 +61,6 @@ public class Grid : MonoBehaviour
                     {
                         _walkableRegionsDictionary.TryGetValue(hit.collider.gameObject.layer, out movementPenalty);
                     }
-                    Debug.Log(movementPenalty);
                 }
 
                 _grid[x, y] = new Node(walkable, worldPoint, x, y, movementPenalty);
