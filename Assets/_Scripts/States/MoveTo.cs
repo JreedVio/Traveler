@@ -37,8 +37,11 @@ public class MoveTo : IState
             }
             _currentWaypoint = _path[_targetIndex];
         }
-
-        _object.position = Vector3.MoveTowards(_object.position, _currentWaypoint, _speed * Time.deltaTime);
+        else
+        {
+            _object.forward = (_currentWaypoint - _object.position).normalized;
+            _object.position = Vector3.MoveTowards(_object.position, _currentWaypoint, _speed * Time.deltaTime);
+        }
     }
 
     public void OnEnter()
@@ -70,24 +73,4 @@ public class MoveTo : IState
         IsDestinationReached = false;
     }
     
-    /*private void OnDrawGizmos()
-    {
-        if (_path != null)
-        {
-            for (int i = _targetIndex; i < _path.Length; i++)
-            {
-                Gizmos.color = Color.black;
-                Gizmos.DrawCube(_path[i], Vector3.one);
-
-                if (i == _targetIndex)
-                {
-                    Gizmos.DrawLine(_object.position, _path[i]);
-                }
-                else
-                {
-                    Gizmos.DrawLine(_path[i-1], _path[i]);
-                }
-            }
-        }
-    }*/
 }
