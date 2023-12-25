@@ -16,7 +16,6 @@ public class Traveler : MonoBehaviour
 
     [SerializeField] private IntReference _resource = new IntReference();
     [SerializeField] private IntReference _money = new IntReference();
-
     public int Resource => _resource.Value;
     public int Money => _money.Value;
     
