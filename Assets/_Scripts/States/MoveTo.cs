@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 
 public class MoveTo : IState
@@ -8,7 +9,6 @@ public class MoveTo : IState
     private readonly Vector3 _destination;
     private readonly float _speed;
     
-    public float TimeWaited = 0f;
     public bool IsDestinationReached = false;
     
     private bool _isPathFound = false;
@@ -25,13 +25,12 @@ public class MoveTo : IState
     }
     public void Tick()
     {
-        if (!_isPathFound) return;
+        if (!_isPathFound || IsDestinationReached) return;
         
         if (_object.position == _currentWaypoint)
         {
             _targetIndex++;
             if(_targetIndex >= _path.Length){
-                TimeWaited += Time.deltaTime;
                 IsDestinationReached = true;
                 return;
             }
@@ -47,6 +46,7 @@ public class MoveTo : IState
     public void OnEnter()
     {
         PathRequestManager.RequestPath(_object.position, _destination, OnPathFound);
+        _object.GetComponent<Animator>().SetFloat("Speed", 1f);
     }
     
     private void OnPathFound(Vector3[] newPath_, bool pathSuccessful_)
@@ -65,12 +65,12 @@ public class MoveTo : IState
 
     public void OnExit()
     {
-        TimeWaited = 0f;
         _isPathFound = false;
         _targetIndex = 0;
         _path = new Vector3[0];
         _currentWaypoint = Vector3.zero;
         IsDestinationReached = false;
+        _object.GetComponent<Animator>().SetFloat("Speed", 0f);
     }
     
 }
