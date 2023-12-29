@@ -1441,8 +1441,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 37.618004, y: 2.9680002, z: 44.1}
+  m_LocalRotation: {x: -0, y: 0.917032, z: -0, w: 0.39881375}
+  m_LocalPosition: {x: 35.077744, y: 2.9680002, z: 41.941063}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1527,8 +1527,8 @@ MonoBehaviour:
   - TerrainMask:
       serializedVersion: 2
       m_Bits: 256
-    TerrainPenalty: 30
-  _obstacleProximityPenalty: 10
+    TerrainPenalty: 100
+  _obstacleProximityPenalty: 1000
 --- !u!4 &1693821718
 Transform:
   m_ObjectHideFlags: 0
@@ -1627,7 +1627,7 @@ Transform:
   m_GameObject: {fileID: 1995407411}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 37.618004, y: 2.9680002, z: 44.1}
+  m_LocalPosition: {x: 35.077744, y: 2.9680002, z: 41.941063}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1816,7 +1816,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2269407395365315526}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0.917032, z: 0, w: 0.39881375}
   m_LocalPosition: {x: 38.83, y: 0, z: 40.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2684,7 +2684,8 @@ MonoBehaviour:
   TownBLocation: {fileID: 353267502}
   ForestLocation: {fileID: 748305384}
   _speed: 5
-  _slowestSpeed: 1
+  _slowestSpeed: 2
+  _initialRotationSpeed: 2
   _turnSpeed: 1
   _turnDistance: 5
   _stoppingDistance: 5

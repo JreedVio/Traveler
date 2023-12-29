@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Cinemachine;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ public class MoveTo : IState
     private readonly float _stoppingDistance;
     private readonly AnimationCurve _stoppingCurve = AnimationCurve.Linear(0, 0, 1, 1);
     private readonly float _slowestSpeed;
+    private readonly float _initialRotationSpeed;
 
     
     public bool IsDestinationReached = false;
@@ -20,10 +22,11 @@ public class MoveTo : IState
     private bool _isFollowingPath = false;
     private int _pathIndex = 0;
     private Path _path;
+    private Quaternion _targetInitialRotation;
 
 
     public MoveTo(Transform object_, Vector3 destination, float speed, 
-        float turnDistance, float turnSpeed, float stoppingDistance, float slowestSpeed,
+        float turnDistance, float turnSpeed, float stoppingDistance, float slowestSpeed, float initialRotationSpeed,
         AnimationCurve stoppingCurve = null)
     {
         _object = object_;
@@ -34,13 +37,26 @@ public class MoveTo : IState
         _stoppingDistance = stoppingDistance;
         if(stoppingCurve != null) _stoppingCurve = stoppingCurve;
         _slowestSpeed = slowestSpeed;
+        _initialRotationSpeed = initialRotationSpeed;
     }
     
+    // Handle movement
     public void Tick()
     {
+        if (_path != null && !_isFollowingPath)
+        {
+            _object.transform.rotation = Quaternion.Lerp(_object.transform.rotation, _targetInitialRotation, _initialRotationSpeed * Time.deltaTime);
+            if (Quaternion.Angle(_object.transform.rotation, _targetInitialRotation) < 10f)
+            {
+                _object.GetComponent<Animator>().SetFloat("Speed", 1f);
+                _isFollowingPath = true;
+            }
+        }
+
         if (!_isFollowingPath || IsDestinationReached) return;
         
         Vector2 pos2D = new Vector2(_object.position.x, _object.position.z);
+        // Check if the object is past the current index
         while (_path.turnBoundaries[_pathIndex].HasCrossedLine(pos2D))
         {
             if (_pathIndex == _path.finishLineIndex)
@@ -53,13 +69,14 @@ public class MoveTo : IState
                 _pathIndex++;
         }
 
+        // Move and rotate the object
         if (_isFollowingPath)
         {
             // Slow down before the finish point
             float currentSpeed = _speed;
             float distanceToFinish = _path.turnBoundaries[_path.finishLineIndex].DistanceFromPoint(pos2D);
             if (distanceToFinish <= _stoppingDistance && _pathIndex >= _path.slowDownIndex && _stoppingDistance > 0)
-                currentSpeed = Mathf.Lerp(currentSpeed, _slowestSpeed, _stoppingCurve.Evaluate(1 - distanceToFinish / _stoppingDistance));
+                currentSpeed = Mathf.Lerp(_speed, _slowestSpeed, _stoppingCurve.Evaluate(1 - distanceToFinish / _stoppingDistance));
             
             Quaternion targetRotation = Quaternion.LookRotation(_path.lookPoints[_pathIndex] - _object.transform.position);
             _object.transform.rotation = Quaternion.Lerp(_object.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
@@ -71,7 +88,6 @@ public class MoveTo : IState
     public void OnEnter()
     {
         PathRequestManager.RequestPath(_object.position, _destination, OnPathFound);
-        _object.GetComponent<Animator>().SetFloat("Speed", 1f);
     }
     
     public void OnExit()
@@ -81,6 +97,7 @@ public class MoveTo : IState
         _path = null;
         _pathIndex = 0;
         IsDestinationReached = false;
+        _targetInitialRotation = Quaternion.identity;
 
         _object.GetComponent<Animator>().SetFloat("Speed", 0f);
     }
@@ -89,10 +106,9 @@ public class MoveTo : IState
     {
         if (pathSuccessful)
         {
-            _isFollowingPath = true;
             _path = new Path(waypoints, _object.position, _turnDistance, _stoppingDistance);
             _pathIndex = 0;
-            _object.transform.LookAt(_path.lookPoints[0]);
+            _targetInitialRotation = Quaternion.LookRotation(_path.lookPoints[0] - _object.transform.position);
         }
         else
         {

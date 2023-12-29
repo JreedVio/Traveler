@@ -13,6 +13,7 @@ public class Traveler : MonoBehaviour
     public Transform ForestLocation;
     [SerializeField] private float _speed = 15;
     [SerializeField] private float _slowestSpeed = 1;
+    [SerializeField] private float _initialRotationSpeed = 10;
     [SerializeField] private float _turnSpeed = 3;
     [SerializeField] private float _turnDistance = 5;
     [SerializeField] private float _stoppingDistance = 10;
@@ -32,10 +33,10 @@ public class Traveler : MonoBehaviour
         _animatorController = GetComponent<AnimatorController>();
         _stateMachine = new StateMachine();
         
-        var moveToForest = new MoveTo(transform, ForestLocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _stoppingCurve);
+        var moveToForest = new MoveTo(transform, ForestLocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _initialRotationSpeed, _stoppingCurve);
         var collectResource = new CollectResource(_resource);
-        var moveToTownA = new MoveTo(transform, TownALocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _stoppingCurve);
-        var moveToTownB = new MoveTo(transform, TownBLocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _stoppingCurve);
+        var moveToTownA = new MoveTo(transform, TownALocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _initialRotationSpeed, _stoppingCurve);
+        var moveToTownB = new MoveTo(transform, TownBLocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _initialRotationSpeed, _stoppingCurve);
         var sellProduce = new SellProduce(_resource, _money);
         
         _stateMachine.AddTransition(moveToForest, collectResource, WaitedInForestForOverASecond());
