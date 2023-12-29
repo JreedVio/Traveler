@@ -8,39 +8,64 @@ public class MoveTo : IState
     private readonly Transform _object;
     private readonly Vector3 _destination;
     private readonly float _speed;
+    private readonly float _turnDistance;
+    private readonly float _turnSpeed;
+    private readonly float _stoppingDistance;
+    private readonly AnimationCurve _stoppingCurve = AnimationCurve.Linear(0, 0, 1, 1);
+    private readonly float _slowestSpeed;
+
     
     public bool IsDestinationReached = false;
-    
-    private bool _isPathFound = false;
-    private Vector3[] _path;
-    private int _targetIndex = 0;
-    private Vector3 _currentWaypoint = Vector3.zero;
+
+    private bool _isFollowingPath = false;
+    private int _pathIndex = 0;
+    private Path _path;
 
 
-    public MoveTo(Transform object_, Vector3 destination_, float speed_)
+    public MoveTo(Transform object_, Vector3 destination, float speed, 
+        float turnDistance, float turnSpeed, float stoppingDistance, float slowestSpeed,
+        AnimationCurve stoppingCurve = null)
     {
         _object = object_;
-        _destination = destination_;
-        _speed = speed_;
+        _destination = destination;
+        _speed = speed;
+        _turnDistance = turnDistance;
+        _turnSpeed = turnSpeed;
+        _stoppingDistance = stoppingDistance;
+        if(stoppingCurve != null) _stoppingCurve = stoppingCurve;
+        _slowestSpeed = slowestSpeed;
     }
+    
     public void Tick()
     {
-        if (!_isPathFound || IsDestinationReached) return;
+        if (!_isFollowingPath || IsDestinationReached) return;
         
-        if (_object.position == _currentWaypoint)
+        Vector2 pos2D = new Vector2(_object.position.x, _object.position.z);
+        while (_path.turnBoundaries[_pathIndex].HasCrossedLine(pos2D))
         {
-            _targetIndex++;
-            if(_targetIndex >= _path.Length){
+            if (_pathIndex == _path.finishLineIndex)
+            {
+                _isFollowingPath = false;
                 IsDestinationReached = true;
-                return;
+                break;
             }
-            _currentWaypoint = _path[_targetIndex];
+            else
+                _pathIndex++;
         }
-        else
+
+        if (_isFollowingPath)
         {
-            _object.forward = (_currentWaypoint - _object.position).normalized;
-            _object.position = Vector3.MoveTowards(_object.position, _currentWaypoint, _speed * Time.deltaTime);
+            // Slow down before the finish point
+            float currentSpeed = _speed;
+            float distanceToFinish = _path.turnBoundaries[_path.finishLineIndex].DistanceFromPoint(pos2D);
+            if (distanceToFinish <= _stoppingDistance && _pathIndex >= _path.slowDownIndex && _stoppingDistance > 0)
+                currentSpeed = Mathf.Lerp(currentSpeed, _slowestSpeed, _stoppingCurve.Evaluate(1 - distanceToFinish / _stoppingDistance));
+            
+            Quaternion targetRotation = Quaternion.LookRotation(_path.lookPoints[_pathIndex] - _object.transform.position);
+            _object.transform.rotation = Quaternion.Lerp(_object.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
+            _object.transform.Translate(Vector3.forward * Time.deltaTime * currentSpeed, Space.Self);
         }
+        
     }
 
     public void OnEnter()
@@ -49,13 +74,25 @@ public class MoveTo : IState
         _object.GetComponent<Animator>().SetFloat("Speed", 1f);
     }
     
-    private void OnPathFound(Vector3[] newPath_, bool pathSuccessful_)
+    public void OnExit()
     {
-        if (pathSuccessful_)
+        // Reset all variables to default
+        _isFollowingPath = false;
+        _path = null;
+        _pathIndex = 0;
+        IsDestinationReached = false;
+
+        _object.GetComponent<Animator>().SetFloat("Speed", 0f);
+    }
+    
+    private void OnPathFound(Vector3[] waypoints, bool pathSuccessful)
+    {
+        if (pathSuccessful)
         {
-            _isPathFound = pathSuccessful_;
-            _path = newPath_;
-            _currentWaypoint = _path[0];
+            _isFollowingPath = true;
+            _path = new Path(waypoints, _object.position, _turnDistance, _stoppingDistance);
+            _pathIndex = 0;
+            _object.transform.LookAt(_path.lookPoints[0]);
         }
         else
         {
@@ -63,14 +100,9 @@ public class MoveTo : IState
         }
     }
 
-    public void OnExit()
+    public void OnDrawGizmos()
     {
-        _isPathFound = false;
-        _targetIndex = 0;
-        _path = new Vector3[0];
-        _currentWaypoint = Vector3.zero;
-        IsDestinationReached = false;
-        _object.GetComponent<Animator>().SetFloat("Speed", 0f);
+        if(_path != null)
+            _path.DrawWithGizmos();
     }
-    
 }

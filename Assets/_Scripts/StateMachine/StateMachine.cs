@@ -91,4 +91,12 @@ public class StateMachine
 
       return null;
    }
+   
+   public void DrawGizmos()
+   {
+      if (_currentState is MoveTo moveTo)
+      {
+         moveTo.OnDrawGizmos();
+      }
+   }
 }
