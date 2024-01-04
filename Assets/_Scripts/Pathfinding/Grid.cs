@@ -61,10 +61,13 @@ public class Grid : MonoBehaviour
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit, 100, _walkableMask))
                     _walkableRegionsDictionary.TryGetValue(hit.collider.gameObject.layer, out movementPenalty);
-                
-                if(!walkable)
+
+                if (!walkable)
+                {
                     movementPenalty += _obstacleProximityPenalty;
-                
+                    Debug.Log(worldPoint);
+                }
+
                 _grid[x, y] = new Node(walkable, worldPoint, x, y, movementPenalty);
             }
         }
@@ -164,13 +167,18 @@ public class Grid : MonoBehaviour
         Gizmos.DrawWireCube(transform.position, new Vector3(_gridWorldSize.x, 1, _gridWorldSize.y));
         if (_grid != null && DisplayGridGizmos)
         {
+            Gizmos.color = Color.red;
             foreach (Node n in _grid) 
             {
-                if(!n.Walkable) Gizmos.color = Color.red;
-                else Gizmos.color = Color.Lerp(Color.white, Color.black, 
-                    Mathf.InverseLerp(_penaltyMin, _penaltyMax, n.MovementPenalty));
+                // if(!n.Walkable) Gizmos.color = Color.red;
+                // else Gizmos.color = Color.Lerp(Color.white, Color.black, 
+                //     Mathf.InverseLerp(_penaltyMin, _penaltyMax, n.MovementPenalty));
+                //
+                // Gizmos.DrawCube(n.WorldPosition, Vector3.one * (_nodeDiameter));
                 
-                Gizmos.DrawCube(n.WorldPosition, Vector3.one * (_nodeDiameter));
+                if(!n.Walkable) Gizmos.DrawCube(n.WorldPosition, Vector3.one * (_nodeDiameter));
+                
+                
             }
         }
     }
