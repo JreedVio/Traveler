@@ -11,13 +11,7 @@ public class Traveler : MonoBehaviour
     public Transform TownALocation;
     public Transform TownBLocation;
     public Transform ForestLocation;
-    [SerializeField] private float _speed = 15;
-    [SerializeField] private float _slowestSpeed = 1;
-    [SerializeField] private float _initialRotationSpeed = 10;
-    [SerializeField] private float _turnSpeed = 3;
-    [SerializeField] private float _turnDistance = 5;
-    [SerializeField] private float _stoppingDistance = 10;
-    [SerializeField] private AnimationCurve _stoppingCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [SerializeField] private MovementParameters _movementParameters;
 
     [SerializeField] private IntReference _resource = new IntReference();
     [SerializeField] private IntReference _money = new IntReference();
@@ -33,23 +27,25 @@ public class Traveler : MonoBehaviour
         _animatorController = GetComponent<AnimatorController>();
         _stateMachine = new StateMachine();
         
-        //var moveToForest = new MoveTo(transform, ForestLocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _initialRotationSpeed, _stoppingCurve);
-        //var collectResource = new CollectResource(_resource);
-        var moveToTownA = new MoveTo(transform, TownALocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _initialRotationSpeed, _stoppingCurve);
-        var moveToTownB = new MoveTo(transform, TownBLocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _initialRotationSpeed, _stoppingCurve);
+        var moveToTownA = new MoveTo(transform, TownALocation.position, _movementParameters);
+        var moveToForest = new MoveTo(transform, ForestLocation.position, _movementParameters);
+        var collectResource = new CollectResource(_resource);
+        var moveToTownB = new MoveTo(transform, TownBLocation.position, _movementParameters);
         var sellProduce = new SellProduce(_resource, _money);
         
-        //_stateMachine.AddTransition(moveToForest, collectResource, WaitedInForestForOverASecond());
-        //_stateMachine.AddTransition(collectResource, moveToTownA, ResourceIsCollected());
-        _stateMachine.AddTransition(moveToTownA, moveToTownB, WaitedInTownAForOverASecond());
+        _stateMachine.AddTransition(moveToTownA, moveToForest, WaitedInTownAForOverASecondWithNoResources());
+        _stateMachine.AddTransition(moveToForest, collectResource, WaitedInForestForOverASecond());
+        _stateMachine.AddTransition(collectResource, moveToTownA, ResourceIsCollected());
+        _stateMachine.AddTransition(moveToTownA, moveToTownB, WaitedInTownAForOverASecondWithResources());
         _stateMachine.AddTransition(moveToTownB, sellProduce, WaitedInTownBForOverASecond());
         _stateMachine.AddTransition(sellProduce, moveToTownA, ProduceIsSold());
         
         _stateMachine.SetState(moveToTownA);
         
-        //Func<bool> WaitedInForestForOverASecond() => () => moveToForest.IsDestinationReached;
-        //Func<bool> ResourceIsCollected() => () => collectResource.IsResourceCollected;
-        Func<bool> WaitedInTownAForOverASecond() => () => moveToTownA.IsDestinationReached;
+        Func<bool> WaitedInTownAForOverASecondWithNoResources() => () => moveToTownA.IsDestinationReached && Resource == 0;
+        Func<bool> ResourceIsCollected() => () => collectResource.IsResourceCollected;
+        Func<bool> WaitedInForestForOverASecond() => () => moveToForest.IsDestinationReached;
+        Func<bool> WaitedInTownAForOverASecondWithResources() => () => moveToTownA.IsDestinationReached && Resource > 0;
         Func<bool> WaitedInTownBForOverASecond() => () => moveToTownB.IsDestinationReached;
         Func<bool> ProduceIsSold() => () => sellProduce.IsProduceSold;
     }
@@ -58,7 +54,7 @@ public class Traveler : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        if (_stateMachine != null) _stateMachine.DrawGizmos();
+        if (_stateMachine != null && _drawPath) _stateMachine.DrawGizmos();
     }
     
 }

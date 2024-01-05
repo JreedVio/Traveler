@@ -12,34 +12,34 @@ public class MoveTo : IState
     private readonly float _turnDistance;
     private readonly float _turnSpeed;
     private readonly float _stoppingDistance;
-    private readonly AnimationCurve _stoppingCurve = AnimationCurve.Linear(0, 0, 1, 1);
     private readonly float _slowestSpeed;
     private readonly float _initialRotationSpeed;
-
+    private readonly AnimationCurve _stoppingCurve;
+    private readonly AnimationCurve _turningCurve;
     
     public bool IsDestinationReached = false;
 
     private bool _isFollowingPath = false;
     private int _pathIndex = 0;
     private Path _path;
+    
     private Quaternion _targetRotation;
     private Quaternion _initialRotation;
     private float _tRotation = 0f;
 
 
-    public MoveTo(Transform object_, Vector3 destination, float speed, 
-        float turnDistance, float turnSpeed, float stoppingDistance, float slowestSpeed, float initialRotationSpeed,
-        AnimationCurve stoppingCurve = null)
+    public MoveTo(Transform object_, Vector3 destination, MovementParameters movementParameters)
     {
         _object = object_;
         _destination = destination;
-        _speed = speed;
-        _turnDistance = turnDistance;
-        _turnSpeed = turnSpeed;
-        _stoppingDistance = stoppingDistance;
-        if(stoppingCurve != null) _stoppingCurve = stoppingCurve;
-        _slowestSpeed = slowestSpeed;
-        _initialRotationSpeed = initialRotationSpeed;
+        _speed = movementParameters.Speed;
+        _turnDistance = movementParameters.TurnDistance;
+        _turnSpeed = movementParameters.TurnSpeed;
+        _stoppingDistance = movementParameters.StoppingDistance;
+        _stoppingCurve = movementParameters.StoppingCurve;
+        _slowestSpeed = movementParameters.SlowestSpeed;
+        _initialRotationSpeed = movementParameters.InitialRotationSpeed;
+        _turningCurve = movementParameters.TurningCurve;
     }
     
     // Handle movement
@@ -48,7 +48,7 @@ public class MoveTo : IState
         if (_path != null && !_isFollowingPath)
         {
             _tRotation += _initialRotationSpeed * Time.deltaTime;
-            _object.transform.rotation = Quaternion.Lerp(_initialRotation, _targetRotation, _stoppingCurve.Evaluate(_tRotation));
+            _object.transform.rotation = Quaternion.Lerp(_initialRotation, _targetRotation, _turningCurve.Evaluate(_tRotation));
             if (_tRotation >= 1f)
             {
                 _object.GetComponent<Animator>().SetFloat("Speed", 1f);
