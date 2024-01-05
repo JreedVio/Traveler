@@ -22,7 +22,9 @@ public class MoveTo : IState
     private bool _isFollowingPath = false;
     private int _pathIndex = 0;
     private Path _path;
-    private Quaternion _targetInitialRotation;
+    private Quaternion _targetRotation;
+    private Quaternion _initialRotation;
+    private float _tRotation = 0f;
 
 
     public MoveTo(Transform object_, Vector3 destination, float speed, 
@@ -45,8 +47,9 @@ public class MoveTo : IState
     {
         if (_path != null && !_isFollowingPath)
         {
-            _object.transform.rotation = Quaternion.Lerp(_object.transform.rotation, _targetInitialRotation, _initialRotationSpeed * Time.deltaTime);
-            if (Quaternion.Angle(_object.transform.rotation, _targetInitialRotation) < 10f)
+            _tRotation += _initialRotationSpeed * Time.deltaTime;
+            _object.transform.rotation = Quaternion.Lerp(_initialRotation, _targetRotation, _stoppingCurve.Evaluate(_tRotation));
+            if (_tRotation >= 1f)
             {
                 _object.GetComponent<Animator>().SetFloat("Speed", 1f);
                 _isFollowingPath = true;
@@ -78,7 +81,7 @@ public class MoveTo : IState
             if (distanceToFinish <= _stoppingDistance && _pathIndex >= _path.slowDownIndex && _stoppingDistance > 0)
                 currentSpeed = Mathf.Lerp(_speed, _slowestSpeed, _stoppingCurve.Evaluate(1 - distanceToFinish / _stoppingDistance));
             
-            Quaternion targetRotation = Quaternion.LookRotation(_path.lookPoints[_pathIndex] - _object.transform.position);
+            Quaternion targetRotation = Quaternion.LookRotation(_path.lookPoints[_pathIndex] - new Vector3(_object.transform.position.x, 0, _object.transform.position.z));
             _object.transform.rotation = Quaternion.Lerp(_object.transform.rotation, targetRotation, Time.deltaTime * _turnSpeed);
             _object.transform.Translate(Vector3.forward * Time.deltaTime * currentSpeed, Space.Self);
         }
@@ -97,7 +100,9 @@ public class MoveTo : IState
         _path = null;
         _pathIndex = 0;
         IsDestinationReached = false;
-        _targetInitialRotation = Quaternion.identity;
+        _targetRotation = Quaternion.identity;
+        _initialRotation = Quaternion.identity;
+        _tRotation = 0f;
 
         _object.GetComponent<Animator>().SetFloat("Speed", 0f);
     }
@@ -108,7 +113,9 @@ public class MoveTo : IState
         {
             _path = new Path(waypoints, _object.position, _turnDistance, _stoppingDistance);
             _pathIndex = 0;
-            _targetInitialRotation = Quaternion.LookRotation(_path.lookPoints[0] - _object.transform.position);
+            _targetRotation = Quaternion.LookRotation(_path.lookPoints[0] - new Vector3(_object.transform.position.x, 0, _object.transform.position.z));
+            _initialRotation = _object.transform.rotation;
+            _tRotation = 0f;
         }
         else
         {

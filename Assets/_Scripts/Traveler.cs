@@ -33,22 +33,22 @@ public class Traveler : MonoBehaviour
         _animatorController = GetComponent<AnimatorController>();
         _stateMachine = new StateMachine();
         
-        var moveToForest = new MoveTo(transform, ForestLocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _initialRotationSpeed, _stoppingCurve);
-        var collectResource = new CollectResource(_resource);
+        //var moveToForest = new MoveTo(transform, ForestLocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _initialRotationSpeed, _stoppingCurve);
+        //var collectResource = new CollectResource(_resource);
         var moveToTownA = new MoveTo(transform, TownALocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _initialRotationSpeed, _stoppingCurve);
         var moveToTownB = new MoveTo(transform, TownBLocation.position, _speed, _turnDistance, _turnSpeed, _stoppingDistance, _slowestSpeed, _initialRotationSpeed, _stoppingCurve);
         var sellProduce = new SellProduce(_resource, _money);
         
-        _stateMachine.AddTransition(moveToForest, collectResource, WaitedInForestForOverASecond());
-        _stateMachine.AddTransition(collectResource, moveToTownA, ResourceIsCollected());
+        //_stateMachine.AddTransition(moveToForest, collectResource, WaitedInForestForOverASecond());
+        //_stateMachine.AddTransition(collectResource, moveToTownA, ResourceIsCollected());
         _stateMachine.AddTransition(moveToTownA, moveToTownB, WaitedInTownAForOverASecond());
         _stateMachine.AddTransition(moveToTownB, sellProduce, WaitedInTownBForOverASecond());
-        _stateMachine.AddTransition(sellProduce, moveToForest, ProduceIsSold());
+        _stateMachine.AddTransition(sellProduce, moveToTownA, ProduceIsSold());
         
-        _stateMachine.SetState(moveToForest);
+        _stateMachine.SetState(moveToTownA);
         
-        Func<bool> WaitedInForestForOverASecond() => () => moveToForest.IsDestinationReached;
-        Func<bool> ResourceIsCollected() => () => collectResource.IsResourceCollected;
+        //Func<bool> WaitedInForestForOverASecond() => () => moveToForest.IsDestinationReached;
+        //Func<bool> ResourceIsCollected() => () => collectResource.IsResourceCollected;
         Func<bool> WaitedInTownAForOverASecond() => () => moveToTownA.IsDestinationReached;
         Func<bool> WaitedInTownBForOverASecond() => () => moveToTownB.IsDestinationReached;
         Func<bool> ProduceIsSold() => () => sellProduce.IsProduceSold;
