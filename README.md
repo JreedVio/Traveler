@@ -1,5 +1,5 @@
 # Traveler
-Traveler is a Unity project is a simulation of an AI-controlled wizard travelling between two towns and collecting flowers.
+Traveler is a 3D simulation of an AI-controlled wizard travelling between two towns and collecting flowers made with Unity Engine.
 
 # Game Features
 + A* Pathfinding
