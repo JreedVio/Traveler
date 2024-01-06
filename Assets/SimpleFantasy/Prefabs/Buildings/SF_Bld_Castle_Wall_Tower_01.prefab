@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 480536}
   - component: {fileID: 3339266}
   - component: {fileID: 2389216}
+  - component: {fileID: -8818426738979244523}
   m_Layer: 6
   m_Name: SF_Bld_Castle_Wall_Tower_01
   m_TagString: Untagged
@@ -83,3 +84,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &-8818426738979244523
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 189826}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 8.404663, y: 14.461503, z: 8.3643265}
+  m_Center: {x: 3.7947311, y: 7.2307515, z: -3.8249168}

@@ -167,7 +167,7 @@ public class Grid : MonoBehaviour
         Gizmos.DrawWireCube(transform.position, new Vector3(_gridWorldSize.x, 1, _gridWorldSize.y));
         if (_grid != null && DisplayGridGizmos)
         {
-            Gizmos.color = Color.green;
+            Gizmos.color = Color.red;
             foreach (Node n in _grid) 
             {
                 // if(!n.Walkable) Gizmos.color = Color.red;
@@ -176,7 +176,7 @@ public class Grid : MonoBehaviour
                 //
                 // Gizmos.DrawCube(n.WorldPosition, Vector3.one * (_nodeDiameter));
                 
-                if(n.MovementPenalty == 0) Gizmos.DrawCube(n.WorldPosition, Vector3.one * (_nodeDiameter));
+                if(!n.Walkable) Gizmos.DrawCube(n.WorldPosition, Vector3.one * (_nodeDiameter));
                 
                 
             }

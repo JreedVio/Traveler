@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3388916}
   - component: {fileID: 2334314}
   - component: {fileID: 4179152812408532900}
-  m_Layer: 9
+  m_Layer: 7
   m_Name: SF_Bld_Elven_Bridge_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 433438}
   - component: {fileID: 3368592}
   - component: {fileID: 2364796}
+  - component: {fileID: 4732124475292334591}
   m_Layer: 6
   m_Name: SF_Bld_House_Stables_01
   m_TagString: Untagged
@@ -83,3 +84,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4732124475292334591
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111504}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 19.063972, y: 20.69077, z: 11.039351}
+  m_Center: {x: -0.47545195, y: 10.345385, z: -1.46769}

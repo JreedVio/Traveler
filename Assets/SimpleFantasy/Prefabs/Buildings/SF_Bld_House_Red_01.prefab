@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 418392}
   - component: {fileID: 3300106}
   - component: {fileID: 2304048}
+  - component: {fileID: 6183376416679289115}
   m_Layer: 6
   m_Name: SF_Bld_House_Red_01
   m_TagString: Untagged
@@ -83,3 +84,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &6183376416679289115
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141060}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 11.513832, y: 12.168157, z: 10.611145}
+  m_Center: {x: 0.0000038146973, y: 6.0840783, z: 0}
