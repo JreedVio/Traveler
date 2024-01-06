@@ -4,7 +4,6 @@ using TMPro;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Vector3 = UnityEngine.Vector3;
 
 public class Traveler : MonoBehaviour
 {
