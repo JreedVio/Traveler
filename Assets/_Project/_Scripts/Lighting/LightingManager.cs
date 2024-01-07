@@ -18,9 +18,10 @@ public class LightingManager : MonoBehaviour
 
     private void Update()
     {
-        float currentTime = Time.timeSinceLevelLoad;
-        float timeOfDayInPercent = currentTime % DayCycleInSeconds / DayCycleInSeconds;
-        TimeOfDay = timeOfDayInPercent * 24f;
+        TimeOfDay += 24f / DayCycleInSeconds * Time.deltaTime;
+        
+        // Handle overflow
+        TimeOfDay %= 24f;
         
         UpdateLighting();
     }
@@ -33,6 +34,8 @@ public class LightingManager : MonoBehaviour
         
         _directionalLight.color = _preset.DirectionalColor.Evaluate(timeOfDayInPercent);
         _directionalLight.transform.localRotation = Quaternion.Euler(new Vector3(timeOfDayInPercent * 360f - 90f, 170, 0));
+        RenderSettings.fogDensity = Mathf.Lerp(_preset.MinFogDensity, _preset.MaxFogDensity,
+            _preset.FogDensityCurve.Evaluate(timeOfDayInPercent));
     }
     
 }
