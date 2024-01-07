@@ -5,6 +5,7 @@ Traveler is a 3D simulation of an AI-controlled wizard travelling between two to
 + A* Pathfinding
 + Finite State Machine
 + Animations
++ Day-Night Cycle
 
 # Credits
 + Synty Studios: https://syntystore.com/products/simple-fantasy-cartoon-assets?_pos=2&_psq=simple+fantasy&_ss=e&_v=1.0
