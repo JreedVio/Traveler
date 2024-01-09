@@ -29,9 +29,9 @@ public class LightingManager : MonoBehaviour
     private void UpdateLighting()
     {
         float timeOfDayInPercent = TimeOfDay / 24f;
+        
         RenderSettings.ambientLight = _preset.AmbientColor.Evaluate(timeOfDayInPercent);
         RenderSettings.fogColor = _preset.FogColor.Evaluate(timeOfDayInPercent);
-        
         _directionalLight.color = _preset.DirectionalColor.Evaluate(timeOfDayInPercent);
         _directionalLight.transform.localRotation = Quaternion.Euler(new Vector3(timeOfDayInPercent * 360f - 90f, 170, 0));
         RenderSettings.fogDensity = Mathf.Lerp(_preset.MinFogDensity, _preset.MaxFogDensity,

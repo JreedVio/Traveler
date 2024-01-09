@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using TMPro;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -19,11 +18,9 @@ public class Traveler : MonoBehaviour
     public int Money => _money.Value;
     
     private StateMachine _stateMachine;
-    private AnimatorController _animatorController;
     
     private void Start()
     {
-        _animatorController = GetComponent<AnimatorController>();
         _stateMachine = new StateMachine();
         
         var moveToTownA = new MoveTo(transform, TownALocation.position, _movementParameters);
