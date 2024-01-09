@@ -1,6 +1,9 @@
 # Traveler
 Traveler is a 3D simulation of an AI-controlled wizard travelling between two towns and collecting flowers made with Unity Engine.
 
+# Demo
+https://youtu.be/IR6MLhSxOvQ
+
 # Game Features
 + A* Pathfinding
 + Finite State Machine
